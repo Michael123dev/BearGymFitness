@@ -143,7 +143,15 @@ class PackageController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'Paket tidak ditemukan.'
-                ], 404);
+                ]);
+            }
+
+            $membershipCount = $package->memberships()->count();
+            if ($membershipCount > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Paket tidak dapat dihapus karena memiliki keanggotaan yang terkait.'
+                ]);
             }
 
             $package->delete();
