@@ -56,7 +56,7 @@ class PackageController extends Controller
                             {
                                 $button .= '<button title="'. ucfirst(__('delete')) .'" 
                                     class="delete-button btn btn-xs btn-danger mr-1" 
-                                    onclick="delete('. $packages->id .')">
+                                    onclick="deletePackage('. $packages->id .')">
                                     <i class="fa fa-trash fa-fw fa-xs"></i>
                                 </button>';
                             }
@@ -133,6 +133,33 @@ class PackageController extends Controller
             ], 500);
         }
     }
+
+    public function delete($id)
+    {
+        try {
+            $package = Package::find($id);
+
+            if (!$package) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Paket tidak ditemukan.'
+                ], 404);
+            }
+
+            $package->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Paket berhasil dihapus.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menghapus paket: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
 
     public function getAllData()
     {

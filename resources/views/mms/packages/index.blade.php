@@ -717,6 +717,44 @@
         });
     }
 
+    function deletePackage(packageId) {
+        Swal.fire({
+            title: "Yakin untuk hapus?",
+            text: "Data paket ini akan dihapus permanen!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Ya, hapus!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('packages.delete', ':id') }}".replace(':id', packageId),
+                    data: {
+                        '_token': "{{ csrf_token() }}",
+                        '_method': "DELETE"
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire("Terhapus!", response.message, "success");
+                            mainTable().ajax.reload();
+                        } else {
+                            Swal.fire("Gagal!", response.message, "error");
+                        }
+                    },
+                    error: function () {
+                        Swal.fire("Error!", "Terjadi kesalahan pada server. Silakan coba lagi.", "error");
+                    }
+                });
+            }
+        });
+    }
+
+
+
     function addPackage()
     {
         $.ajax({

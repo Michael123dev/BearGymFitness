@@ -38,6 +38,7 @@ Route::middleware(['auth', 'prevent-back-history', 'convert-utf-8'])->group(func
         Route::post('/', [PackageController::class, 'store'])->name('packages.store');
         Route::post('/data', [PackageController::class, 'data'])->name('packages.data');
         Route::put('/{id}/update', [PackageController::class, 'update'])->name('packages.update');
+        Route::delete('/{id}', [PackageController::class, 'delete'])->name('packages.delete');
     });
 
     Route::prefix('transaction-report')->group(function () {
