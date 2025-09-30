@@ -1570,78 +1570,57 @@
 
         $("#add_package").change(function (e) { 
             e.preventDefault();
-            let packageId   = $(this).val();
-
-            // today as start date
-            let today = new Date();
-            let formatDate = (date) => {
-                let y = date.getFullYear();
-                let m = String(date.getMonth() + 1).padStart(2, '0');
-                let d = String(date.getDate()).padStart(2, '0');
-                return `${y}-${m}-${d}`;
-            };
-
+            let packageId   =   $(this).val()
             $.ajax({
                 type: "GET",
                 url: "{{ route('packages.get-package-by-id', ['id' => ':id']) }}".replace(':id', packageId),
                 success: function (response) {
-                    if (response.success) {
-                        durationInDays = response.data.duration_in_days;
-
-                        // format today into Y-m-d first
-                        let startDateFormatted = formatDate(today);
-
-                        // parse into safe Date object
-                        let [year, month, day] = startDateFormatted.split('-').map(Number);
-                        let startDateObj = new Date(year, month - 1, day);
-
-                        // calculate end date
-                        let endDateObj = new Date(startDateObj);
-                        endDateObj.setDate(endDateObj.getDate() + durationInDays);
-                        let endDateFormatted = formatDate(endDateObj);
-
-                        // fill form fields
-                        $("#add_start_date").val(startDateFormatted);
-                        $("#add_end_date").val(endDateFormatted);
+                    if (response.success)
+                    {
+                        $("#add_start_date").val(response.data.start_date);
+                        $("#add_end_date").val(response.data.end_date);
                         $("#add_package_type").val(response.data.type);
                         $("#add_total").text("Rp " + response.data.total_price);
                         $("#add_discount").val(response.data.discount);
-                        $("#add_price").val(response.data.price);
 
-                        console.log(response.data.price + "OK");
+                        $("#add_price").val(response.data.price);
 
                         clearValidationMessage();
                         // validateData();
+                        
                     }
-                    else {
+                    else
+                    {
                         showAlert("error", response.message);
                     }
                 }
             });
+            
         });
 
-        $("#add_start_date").change(function (e) { 
+       $("#add_start_date").change(function (e) { 
             e.preventDefault();
-            let startDate = $(this).val(); // expected format: YYYY-MM-DD
-            
-            if (durationInDays > 0 && startDate) {
-                let [year, month, day] = startDate.split('-').map(Number);
-                let startDateObj = new Date(year, month - 1, day); // month is 0-based
-                let endDateObj = new Date(startDateObj);
-                endDateObj.setDate(endDateObj.getDate() + durationInDays);
+            let startDate = $(this).val();
+            let packageId = $("#add_package").val();
 
-                // format to Y-m-d
-                let formatDate = (date) => {
-                    let y = date.getFullYear();
-                    let m = String(date.getMonth() + 1).padStart(2, '0');
-                    let d = String(date.getDate()).padStart(2, '0');
-                    return `${y}-${m}-${d}`;
-                };
+            $.ajax({
+                type: "GET",
+                url: "{{ route('packages.get-package-by-id', ['id' => ':id', 'startDate' => ':startDate']) }}"
+                        .replace(':id', packageId)
+                        .replace(':startDate', startDate),
 
-                $("#add_end_date").val(formatDate(endDateObj));
-            } else {
-                $("#add_end_date").val("");
-            }
+                success: function (response) {
+                    if (response.success) {
+                        $("#add_start_date").val(response.data.start_date);
+                        $("#add_end_date").val(response.data.end_date);
+
+                        clearValidationMessage();
+                        // validateData();
+                    } else {
+                        showAlert("error", response.message);
+                    }
+                }
+            });
         });
 
         $("#save_button").click(function (e) { 

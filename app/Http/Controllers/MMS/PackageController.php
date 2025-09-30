@@ -189,7 +189,7 @@ class PackageController extends Controller
         }
     }
 
-    public function getPackageById($id)
+    public function getPackageById($id, $startDate = null)
     {
         $package = Package::where('id', $id)->first();
         if ($package)
@@ -203,6 +203,20 @@ class PackageController extends Controller
             $totalPrice = $package->price - $discountPrice;
             $totalPrice =  number_format($totalPrice, 0, ',', '.');
 
+            if ($startDate) 
+            {
+                $startDate = Carbon::createFromFormat('Y-m-d', $startDate);
+            } 
+            else 
+            {
+                $startDate = Carbon::now();
+            }
+
+            $endDate = (clone $startDate)->addDays($package->duration_in_days);
+
+            $startDate = $startDate->format('Y-m-d');
+            $endDate   = $endDate->format('Y-m-d');
+
             $data   =   [
                 'id'                =>  $package->id,
                 'package_name'      =>  $package->package_name,
@@ -212,7 +226,9 @@ class PackageController extends Controller
                 'price'             =>  number_format($package->price, 0, ',', '.'),
                 'discount'          =>  $package->discount + 0,
                 'discount_price'    =>  $discountPrice,
-                'duration_in_days'  =>  $package->duration_in_days
+                'duration_in_days'  =>  $package->duration_in_days,
+                'start_date'        =>  $startDate,
+                'end_date'          =>  $endDate,
             ];
 
             return response()->json([

@@ -34,7 +34,7 @@ Route::middleware(['auth', 'prevent-back-history', 'convert-utf-8'])->group(func
     Route::prefix('packages')->group(function () {
         Route::get('/', [PackageController::class, 'index'])->name('packages');
         Route::get('/get-all-data', [PackageController::class, 'getAllData'])->name('packages.get-all-data');
-        Route::get('/get-package-by-id/{id}', [PackageController::class, 'getPackageById'])->name('packages.get-package-by-id');
+        Route::get('/get-package-by-id/{id}/{startDate?}', [PackageController::class, 'getPackageById'])->name('packages.get-package-by-id');
         Route::post('/', [PackageController::class, 'store'])->name('packages.store');
         Route::post('/data', [PackageController::class, 'data'])->name('packages.data');
         Route::put('/{id}/update', [PackageController::class, 'update'])->name('packages.update');
