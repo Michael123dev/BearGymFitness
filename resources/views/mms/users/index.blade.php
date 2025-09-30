@@ -1570,77 +1570,79 @@
 
         $("#add_package").change(function (e) { 
             e.preventDefault();
-            let packageId   =   $(this).val()
-            let startDate   =   new Date();
+            let packageId   = $(this).val();
+
+            // today as start date
+            let today = new Date();
+            let formatDate = (date) => {
+                let y = date.getFullYear();
+                let m = String(date.getMonth() + 1).padStart(2, '0');
+                let d = String(date.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
+            };
+
             $.ajax({
                 type: "GET",
                 url: "{{ route('packages.get-package-by-id', ['id' => ':id']) }}".replace(':id', packageId),
                 success: function (response) {
-                    if (response.success)
-                    {
-                        let endDate = new Date(startDate);
+                    if (response.success) {
                         durationInDays = response.data.duration_in_days;
-                        endDate.setDate(endDate.getDate() + durationInDays);
 
-                        // format to Y-m-d
-                        let formatDate = (date) => {
-                            let year = date.getFullYear();
-                            let month = String(date.getMonth() + 1).padStart(2, '0');
-                            let day = String(date.getDate()).padStart(2, '0');
-                            return `${year}-${month}-${day}`;
-                        };
+                        // format today into Y-m-d first
+                        let startDateFormatted = formatDate(today);
 
-                        let startDateFormatted = formatDate(startDate);
-                        let endDateFormatted = formatDate(endDate);
-                        let totalPrice = response.data.total_price;
+                        // parse into safe Date object
+                        let [year, month, day] = startDateFormatted.split('-').map(Number);
+                        let startDateObj = new Date(year, month - 1, day);
 
+                        // calculate end date
+                        let endDateObj = new Date(startDateObj);
+                        endDateObj.setDate(endDateObj.getDate() + durationInDays);
+                        let endDateFormatted = formatDate(endDateObj);
+
+                        // fill form fields
                         $("#add_start_date").val(startDateFormatted);
                         $("#add_end_date").val(endDateFormatted);
                         $("#add_package_type").val(response.data.type);
                         $("#add_total").text("Rp " + response.data.total_price);
                         $("#add_discount").val(response.data.discount);
-                        console.log(response.data.price + "OK");
                         $("#add_price").val(response.data.price);
+
+                        console.log(response.data.price + "OK");
 
                         clearValidationMessage();
                         // validateData();
-                        
                     }
-                    else
-                    {
+                    else {
                         showAlert("error", response.message);
                     }
                 }
             });
-            
         });
 
         $("#add_start_date").change(function (e) { 
             e.preventDefault();
-            let startDate = $(this).val();
-            if (durationInDays > 0)
-            {
-                
-                let startDateObj = new Date(startDate);
+            let startDate = $(this).val(); // expected format: YYYY-MM-DD
+            
+            if (durationInDays > 0 && startDate) {
+                let [year, month, day] = startDate.split('-').map(Number);
+                let startDateObj = new Date(year, month - 1, day); // month is 0-based
                 let endDateObj = new Date(startDateObj);
                 endDateObj.setDate(endDateObj.getDate() + durationInDays);
 
                 // format to Y-m-d
                 let formatDate = (date) => {
-                    let year = date.getFullYear();
-                    let month = String(date.getMonth() + 1).padStart(2, '0');
-                    let day = String(date.getDate()).padStart(2, '0');
-                    return `${year}-${month}-${day}`;
+                    let y = date.getFullYear();
+                    let m = String(date.getMonth() + 1).padStart(2, '0');
+                    let d = String(date.getDate()).padStart(2, '0');
+                    return `${y}-${m}-${d}`;
                 };
 
                 $("#add_end_date").val(formatDate(endDateObj));
-            }
-            else
-            {
+            } else {
                 $("#add_end_date").val("");
             }
         });
-
 
         $("#save_button").click(function (e) { 
             e.preventDefault();
