@@ -212,7 +212,8 @@ class PackageController extends Controller
                 $startDate = Carbon::now();
             }
 
-            $endDate = (clone $startDate)->addDays($package->duration_in_days);
+            // $endDate = (clone $startDate)->addDays($package->duration_in_days);
+            $endDate = (clone $startDate)->addDays(intval($package->duration_in_days));
 
             $startDate = $startDate->format('Y-m-d');
             $endDate   = $endDate->format('Y-m-d');
