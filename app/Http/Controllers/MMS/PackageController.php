@@ -273,6 +273,7 @@ class PackageController extends Controller
             }
 
             $package->update([
+                'package_name'      =>  $request->package_name,
                 'type'              =>  $request->type,
                 'description'       =>  preg_replace('/\s+/', ' ', trim($request->description)),
                 'price'             =>  $request->price,

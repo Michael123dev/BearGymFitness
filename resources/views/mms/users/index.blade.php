@@ -946,7 +946,7 @@
                     }
                 }
             });
-        }, 200);
+        }, 0);
     }
 
     function formatNumber(num) 
@@ -1160,7 +1160,7 @@
                     }
                 }
             });
-        }, 200);
+        }, 0);
     }
 
     function saveEdit(userId)
@@ -1231,6 +1231,8 @@
 
     function register()
     {
+        $("#loading_spiner").modal("show");
+
         $.ajax({
             type: "POST",
             url: "{{ route('users.register') }}",

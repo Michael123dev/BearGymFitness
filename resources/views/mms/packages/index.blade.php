@@ -667,11 +667,13 @@
                     }
                 }
             });
-        }, 200);
+        }, 0);
     }
 
     function saveEdit(packageId)
     {
+        $("#loading_spiner").modal("show");
+
         $.ajax({
             type: "POST",
             url: "{{ route('packages.update', ':id') }}".replace(':id', packageId),
@@ -757,6 +759,8 @@
 
     function addPackage()
     {
+        $("#loading_spiner").modal("show");
+
         $.ajax({
             type: "POST",
             url: "{{ route('packages.store') }}",
