@@ -190,7 +190,7 @@
 
     <!-- Modal -->
     <div class="modal fade" id="add_user_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" style="max-width: 70% !important;">
             <div class="modal-content">
                 <div class="modal-header">
                     {{-- <h5 class="modal-title" id="staticBackdropLabel">Tambah Pengguna</h5> --}}
@@ -370,17 +370,27 @@
                                             </div>
                                             <small id="add_price_error_text" class="text-danger"></small>
                                         </div>
-                                        <label class="col-md-3 col-form-label" for="add_end_date">Diskon (%)
+                                        <label class="col-md-3 col-form-label" for="add_end_date">Diskon Harga
                                             <span class="text-danger">*</span>
                                         </label>
                                         <div class="col-md-3">
                                             <div class="input-group">
-                                                <input id="add_discount" type="text" class="form-control" disabled>
                                                 <div class="input-group-append">
-                                                    <span class="input-group-text">%</span>
+                                                    <span class="input-group-text">Rp.</span>
                                                 </div>
+                                                <input id="add_discount" type="text" class="form-control" autocomplete="off" disabled>
                                             </div>
                                             <small id="add_discount_error_text" class="text-danger"></small>
+                                        </div>
+                                    </div>
+
+                                    {{-- Keterangan --}}
+                                    <div class="form-group row">
+                                        <label class="col-md-3 col-form-label" for="add_remarks">Keterangan
+                                        </label>
+                                        <div class="col-md-9">
+                                            <textarea id="add_remarks" class="form-control" cols="30" rows="10"></textarea>
+                                            <small id="add_remarks_error_text" class="text-danger"></small>
                                         </div>
                                     </div>
 
@@ -1011,8 +1021,9 @@
         $("#add_package_type").val("");
         $("#add_start_date").val("");
         $("#add_end_date").val("");
-        $("#add_discount").val("");
-        $("#add_price").val("");
+        $("#add_discount").val(0);
+        $("#add_price").val(0);
+        $("#add_remarks").val("");
         $("#add_payment_method").val("");
         $("#add_total").text("Rp 0");
 
@@ -1047,7 +1058,8 @@
                 'payment_method': $("#add_payment_method").val(),
                 'is_special_discount': $("#add_is_special_discount").val(),
                 'price': $("#add_price").val().replace(/\./g, ''),
-                'discount': $("#add_discount").val().replace(/\./g, ''),
+                'discount_price': $("#add_discount").val().replace(/\./g, ''),
+                'remarks': $("#add_remarks").val(),
                 'total_price': $("#add_total").text().replace('Rp ', '').replace(/\./g, ''), // remove dots
             },
             dataType: "json",
@@ -1069,6 +1081,7 @@
                     // $("#add_trainer").val("");
                     $("#add_package").val("").selectpicker("refresh");
                     $("#add_trainer").val("").selectpicker("refresh");
+                    $("#add_remarks").val("");
                     $("add_is_special_discount").val("NO");
                     $("#add_total").text("Rp 0");
                     durationInDays = 0;
@@ -1250,7 +1263,8 @@
                 'payment_method': $("#add_payment_method").val(),
                 'is_special_discount': $("#add_is_special_discount").val(),
                 'price': $("#add_price").val().replace(/\./g, ''),
-                'discount': $("#add_discount").val().replace(/\./g, ''),
+                'discount_price': $("#add_discount").val().replace(/\./g, ''),
+                'remarks': $("#add_remarks").val(),
                 'total_price': $("#add_total").text().replace('Rp ', '').replace(/\./g, ''), // remove dots
             },
             dataType: "json",
@@ -1272,6 +1286,7 @@
                     // $("#add_trainer").val("");
                     $("#add_package").val("").selectpicker("refresh");
                     $("#add_trainer").val("").selectpicker("refresh");
+                    $("#add_remarks").val("");
                     $("add_is_special_discount").val("NO");
                     $("#add_total").text("Rp 0");
                     durationInDays = 0;
@@ -1532,11 +1547,7 @@
         $("#add_discount").on("input", function () {
             // get raw input as string and strip non-digits
             let raw = String(this.value || '').replace(/\D/g, '');
-
-            // parse and clamp between 0 and 100
-            let num = parseInt(raw || '0', 10);
-            if (isNaN(num)) num = 0;
-            num = Math.min(Math.max(num, 0), 100);
+            let num = parseFloat(raw) || 0;
 
             // formatNumber expects a string -> pass a string
             this.value = formatNumber(String(num));
@@ -1548,7 +1559,7 @@
             // calculate total
             let totalPrice = price;
             if (num > 0 && price > 0) {
-                totalPrice = price - (num / 100) * price;
+                totalPrice = price - num;
             }
 
             // format total as "Rp 1.234.567"

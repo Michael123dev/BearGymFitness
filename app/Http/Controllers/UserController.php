@@ -282,9 +282,10 @@ class UserController extends Controller
         $trainerId      =   $request->trainer_id; 
         $isSpecialDisc  =   $request->is_special_discount == "YES" ? 1 : 0;
         $price          =   $request->price;
-        $discount       =   $request->discount;
+        $discountPrice  =   $request->discount_price;
         $totalPrice     =   $request->total_price;
         $paymentMethod  =   $request->payment_method;
+        $remarks        =   $request->remarks;
 
         // dd($birthDate);
         try
@@ -388,10 +389,10 @@ class UserController extends Controller
                 'updated_at'        =>  Carbon::now(),
             ]);
 
-            $discountPrice = 0;
-            if ($discount > 0)
+            $discount = 0;
+            if ($discountPrice > 0)
             {
-                $discountPrice = $discount/100 * $price;
+                $discount = ($discountPrice / $price) * 100;
             }
 
             $day = Carbon::now()->format('d');
@@ -410,6 +411,7 @@ class UserController extends Controller
                 'payment_date'          =>  Carbon::now(),
                 'payment_method'        =>  $paymentMethod,
                 'proof_of_payment'      =>  '',
+                'remarks'               =>  $remarks,
                 'created_by'            =>  Auth::user()->id,
                 'created_at'            =>  Carbon::now(),
                 'updated_by'            =>  Auth::user()->id,
@@ -456,9 +458,10 @@ class UserController extends Controller
         $trainerId      =   $request->trainer_id;
         $isSpecialDisc  =   $request->is_special_discount == "YES" ? 1 : 0;
         $price          =   $request->price;
-        $discount       =   $request->discount;
+        $discountPrice  =   $request->discount_price;
         $totalPrice     =   $request->total_price;
         $paymentMethod  =   $request->payment_method;
+        $remarks        =   $request->remarks;
 
         // dd($request->all());
 
@@ -531,10 +534,10 @@ class UserController extends Controller
                 'updated_at'        =>  Carbon::now(),
             ]); 
 
-            $discountPrice = 0;
-            if ($discount > 0)
+            $discount = 0;
+            if ($discountPrice > 0)
             {
-                $discountPrice = $discount/100 * $price;
+                $discount = ($discountPrice / $price) * 100;
             }
             
             $day = Carbon::now()->format('d');
@@ -553,6 +556,7 @@ class UserController extends Controller
                 'payment_date'          =>  Carbon::now(),
                 'payment_method'        =>  $paymentMethod,
                 'proof_of_payment'      =>  '',
+                'remarks'               =>  $remarks,
                 'created_by'            =>  Auth::user()->id,
                 'created_at'            =>  Carbon::now(),
                 'updated_by'            =>  Auth::user()->id,
