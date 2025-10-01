@@ -1492,6 +1492,10 @@
             this.value = this.value.replace(/\D/g, '');
         });
 
+        $("#add_remarks").on("input", function () {
+            this.value = this.value.toUpperCase();
+        });
+
         $("#add_payment_method").change(function (e) { 
             e.preventDefault();
             clearValidationMessage();
